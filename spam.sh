@@ -1,7 +1,5 @@
 #!/bin/bash
-# Enhanced Telegram Bot Spammer Tool - Gen Z Edition!
 
-# Cek apakah terminal mendukung warna
 if test -t 1; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
@@ -18,7 +16,6 @@ else
     NC=''
 fi
 
-# Function: Banner tampilan
 function banner() {
     clear
     echo -e "${CYAN}"
@@ -34,7 +31,6 @@ EOF
     echo -e "${CYAN}============================================${NC}"
 }
 
-# Function: Validasi input bilangan bulat positif
 function validate_integer() {
     local input="$1"
     if [[ "$input" =~ ^[1-9][0-9]*$ ]]; then
@@ -44,7 +40,6 @@ function validate_integer() {
     fi
 }
 
-# Fungsi prompt untuk input token
 function prompt_token() {
     while true; do
         read -p "Token Bot: " token
@@ -56,7 +51,6 @@ function prompt_token() {
     done
 }
 
-# Fungsi prompt untuk input chat id
 function prompt_chat_id() {
     while true; do
         read -p "Chat ID: " chat_id
@@ -70,7 +64,6 @@ function prompt_chat_id() {
     done
 }
 
-# Fungsi prompt untuk input threads
 function prompt_threads() {
     while true; do
         read -p "Jumlah Threads (misal 1/detik): " threads
@@ -83,7 +76,6 @@ function prompt_threads() {
     done
 }
 
-# Fungsi prompt untuk input pesan dan jumlah pesan
 function prompt_pesan_jumlah() {
     while true; do
         read -p "Pesan: " message
@@ -105,7 +97,6 @@ function prompt_pesan_jumlah() {
     done
 }
 
-# Fungsi untuk mengirim pesan via Telegram API
 function send_message() {
     local token="$1"
     local chat_id="$2"
@@ -115,7 +106,6 @@ function send_message() {
          -d "text=${message}" > /dev/null
 }
 
-# Fungsi untuk mengirim pesan secara concurrent
 function send_messages_concurrent() {
     local token="$1"
     local chat_id="$2"
@@ -137,16 +127,13 @@ function send_messages_concurrent() {
     echo -e "\n${CYAN}Selesai mengirim ${jumlah} pesan.${NC}"
 }
 
-# Global variables untuk menyimpan data token, chat_id, dan threads
 global_token=""
 global_chat_id=""
 global_threads=""
 
-# Main loop
 while true; do
     banner
 
-    # Jika global data belum ada, minta input data lengkap
     if [[ -z "$global_token" || -z "$global_chat_id" || -z "$global_threads" ]]; then
         echo -e "${BLUE}Input data lengkap terlebih dahulu:${NC}"
         prompt_token
@@ -158,11 +145,8 @@ while true; do
     fi
 
     prompt_pesan_jumlah
-
-    # Kirim pesan secara concurrent
     send_messages_concurrent "$global_token" "$global_chat_id" "$message" "$jumlah" "$global_threads"
 
-    # Menu opsi selanjutnya
     echo -e "\n${CYAN}Pilih opsi selanjutnya:${NC}"
     echo -e "${CYAN}[u] Input ulang data lengkap (token, chat id, threads)${NC}"
     echo -e "${CYAN}[y] Kirim ulang pesan dengan data sebelumnya (gunakan token, chat id, threads yang sama)${NC}"
@@ -174,21 +158,14 @@ while true; do
             echo -e "${RED}Script dihentikan. Sampai jumpa!${NC}"
             exit 0
         elif [[ "$opsi" == "u" ]]; then
-            # Reset data global agar bisa input ulang
             global_token=""
             global_chat_id=""
             global_threads=""
             break
         elif [[ "$opsi" == "y" ]]; then
-            # Gunakan data yang sama, cukup input pesan dan jumlah pesan saja
             break
         else
             echo -e "${RED}Opsi tidak valid! Masukkan u, y, atau n.${NC}"
         fi
     done
 done
-
-
-
-
-
