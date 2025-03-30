@@ -39,10 +39,10 @@ def check_for_trap():
     return sys.gettrace() is not None or os.getenv("TRAP_MODE")=="1" or os.getenv("PYTHONDEBUG")=="1" or os.getenv("HACKER_MODE")=="1"
 
 def trigger_decoy():
-    print("Waduh, kamu kena jebakan decoy! Gak ada apa-apa di sini, bro!")
+    print(" ")
     try:
         with open("decoy_payload.txt", "w") as f:
-            f.write("Decoy data: jangan main-main!")
+            f.write("Decoy data: ")
     except Exception:
         pass
     sys.exit(1)
