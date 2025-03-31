@@ -5,3 +5,7 @@
 
 
 
+
+
+# Nanti kalo gacoor repositori ini lu kasih gw bintang ya oke, heheheheheheh
+# jangan reqode mekkk bocah puqiii
