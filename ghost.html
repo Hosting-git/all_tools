@@ -1,747 +1,1075 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GHOST CYBER HUNTER // SYSTEM BREACHED</title>
-    
     <link rel="icon" href="https://a.top4top.io/s_3443cj53q0.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Fira+Code:wght@400;600&family=Teko:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-
     <style>
-      :root {
-        --primary-color: #00ffff;
-        --secondary-color: #ff00ff;
-        --danger-color: #ff1b1b;
-        --success-color: #00ff00;
-        --warning-color: #f39c12;
-        --text-color: #e0e0e0;
-        --dark-bg: rgba(10, 10, 10, 0.85);
-        --dark-bg-solid: #000;
-        --font-heading: 'Orbitron', sans-serif;
-        --font-body: 'Fira Code', monospace;
-        --font-display: 'Teko', sans-serif; /* Font baru untuk display */
-        --glitch-speed: 1.5s;
-      }
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --danger-color: #ff1b1b;
+            --success-color: #00ff00;
+            --warning-color: #f39c12;
+            --text-color: #e0e0e0;
+            --dark-bg: rgba(10, 10, 10, 0.85);
+            --dark-bg-solid: #000;
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Fira Code', monospace;
+            --font-display: 'Teko', sans-serif;
+            /* Font baru untuk display */
+            --glitch-speed: 1.5s;
+        }
 
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: var(--dark-bg-solid); }
-      ::-webkit-scrollbar-thumb { background: var(--primary-color); box-shadow: 0 0 10px var(--primary-color); }
-      ::-webkit-scrollbar-thumb:hover { background: var(--secondary-color); box-shadow: 0 0 10px var(--secondary-color); }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
 
-      body {
-        background-color: var(--dark-bg-solid);
-        margin: 0; padding: 0;
-        font-family: var(--font-body);
-        color: var(--text-color);
-        overflow-x: hidden;
-        position: relative;
-      }
-      
-      /* EFEK SCANLINE DAN VIGNETTE */
-      body::before {
-        content: "";
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(ellipse at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
-        z-index: 9997;
-        pointer-events: none;
-      }
-      body::after {
-        content: "";
-        position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.5) 1px, transparent 1px, transparent 2px);
-        z-index: 9998;
-        pointer-events: none;
-        opacity: 0.3;
-        animation: flicker 0.15s infinite;
-      }
-      
-      #site-content { display: none; }
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg-solid);
+        }
 
-      #preloader {
-        position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: var(--dark-bg-solid);
-        z-index: 9999;
-        display: flex; justify-content: center; align-items: center;
-        font-family: var(--font-body); color: var(--success-color);
-      }
-      .preloader-content { text-align: center; }
-      .preloader-content p { white-space: pre; text-align: left; }
-      #preloader-logo {
-        width: 150px; height: 150px;
-        opacity: 0;
-        animation: fadeIn 1s 2s forwards, glitch 1.5s 3s infinite;
-      }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
 
-      .background-layers {
-        position: fixed; top: 0; left: 0;
-        width: 100%; height: 100%;
-        z-index: -1;
-      }
-      #matrixCanvas { position: absolute; opacity: 0.5; }
-      #world-map {
-          position: absolute;
-          width: 100%; height: 100%;
-          background-image: url('https://i.imgur.com/6X0VssB.png');
-          background-size: cover;
-          background-position: center;
-          opacity: 0.1;
-          animation: pulse-map 10s infinite alternate;
-      }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
 
-      header, nav, main, footer { padding: 1.5rem; position: relative; z-index: 2; }
-      
-      .container {
-        max-width: 1200px; margin: 2rem auto; padding: 2.5rem;
-        background: var(--dark-bg);
-        border: 1px solid var(--primary-color);
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
-        box-shadow: 0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
-        position: relative;
-        transition: transform 0.5s ease, opacity 0.5s ease;
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      .container.visible { opacity: 1; transform: translateY(0); }
-      
-      @keyframes flicker { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.4; } }
-      @keyframes pulse-map { from { opacity: 0.1; transform: scale(1); } to { opacity: 0.2; transform: scale(1.02); } }
-      @keyframes glitch {
-        0%, 100% { transform: translate(0, 0); text-shadow: 0 0 10px var(--primary-color); clip-path: inset(0 0 0 0); }
-        10% { transform: translate(-5px, 2px); text-shadow: 0 0 10px var(--danger-color); clip-path: inset(10% 0 85% 0); }
-        30% { transform: translate(3px, -4px); text-shadow: 0 0 10px var(--success-color); clip-path: inset(90% 0 2% 0); }
-        50% { transform: translate(0, 0); clip-path: inset(40% 0 40% 0); }
-        70% { transform: translate(-2px, 3px); }
-        90% { transform: translate(4px, -2px); text-shadow: 0 0 10px var(--secondary-color); clip-path: inset(75% 0 10% 0); }
-      }
-      @keyframes fadeIn { to { opacity: 1; } }
-      @keyframes blink { 50% { opacity: 0; } }
-      
-      h1, h2, h3 {
-        font-family: var(--font-heading);
-        color: var(--primary-color);
-        text-shadow: 0 0 8px var(--primary-color), 0 0 15px var(--secondary-color);
-        letter-spacing: 3px;
-        text-transform: uppercase;
-      }
-      .main-title {
-        text-align: center; font-size: 3rem;
-        animation: glitch var(--glitch-speed) linear infinite alternate-reverse;
-        display: inline-block;
-      }
-      .title-wrapper { text-align: center; margin-bottom: 2rem; }
-      p, li { line-height: 1.8; }
-      strong { color: var(--primary-color); }
+        body {
+            background-color: var(--dark-bg-solid);
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+        }
 
-      .logo {
-        width: 120px; height: 120px; display: block; margin: 1rem auto; border-radius: 50%;
-        border: 3px solid var(--primary-color);
-        box-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--secondary-color), inset 0 0 10px var(--primary-color);
-        transition: transform 0.4s ease, filter 0.4s ease;
-      }
-      .logo:hover { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 25px var(--primary-color)); }
+        /* EFEK SCANLINE DAN VIGNETTE */
 
-      nav {
-        border-top: 1px solid rgba(0, 255, 255, 0.3); border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-        padding: 1rem 0; margin-bottom: 2rem;
-      }
-      nav ul { list-style: none; padding: 0; display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
-      nav a {
-        color: var(--primary-color); text-decoration: none; font-family: var(--font-heading);
-        font-size: 1.2rem; text-shadow: 0 0 5px var(--primary-color);
-        transition: color 0.3s ease, text-shadow 0.3s ease;
-      }
-      nav a:hover { color: var(--secondary-color); text-shadow: 0 0 15px var(--secondary-color); }
-      
-      /* FITUR BARU: Live Operations Stats */
-      .ops-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.5rem;
-          margin: 2.5rem 0;
-          padding: 1rem;
-          border: 1px dashed var(--warning-color);
-          background: rgba(243, 156, 18, 0.05);
-      }
-      .stat-item {
-          text-align: center;
-      }
-      .stat-item .stat-value {
-          font-family: var(--font-display);
-          font-size: 3rem;
-          font-weight: 700;
-          color: var(--warning-color);
-          text-shadow: 0 0 10px var(--warning-color);
-      }
-      .stat-item .stat-label {
-          font-family: var(--font-heading);
-          font-size: 1rem;
-          text-transform: uppercase;
-          color: var(--text-color);
-          letter-spacing: 2px;
-      }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 9997;
+            pointer-events: none;
+        }
 
-      .team-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2.5rem;
-      }
-      .team-member {
-        background: transparent; border: 1px solid var(--secondary-color); padding: 1.5rem;
-        text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;
-        clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-        position: relative; overflow: hidden;
-      }
-      .team-member::before {
-        content: '';
-        position: absolute;
-        top: -50%; left: -50%;
-        width: 200%; height: 200%;
-        background: conic-gradient(transparent, rgba(255, 0, 255, 0.3), transparent 30%);
-        animation: rotate-border 4s linear infinite;
-      }
-      .team-member:hover { transform: translateY(-10px); box-shadow: 0 0 20px var(--secondary-color); }
-      @keyframes rotate-border { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0px, rgba(0, 0, 0, 0.5) 1px, transparent 1px, transparent 2px);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: flicker 0.15s infinite;
+        }
 
-      .team-member img {
-        width: 100px; height: 100px; object-fit: cover; border-radius: 50%;
-        border: 2px solid var(--primary-color); box-shadow: 0 0 15px var(--primary-color); margin-bottom: 1rem;
-        z-index: 2; position: relative;
-      }
-      .team-member h3 { color: var(--success-color); text-shadow: 0 0 5px var(--success-color); z-index: 2; position: relative; }
-      .team-member p { font-size: 0.9rem; color: #bbb; text-shadow: none; z-index: 2; position: relative; }
+        #site-content {
+            display: none;
+        }
 
-      .terminal-window {
-        background-color: var(--dark-bg-solid); color: var(--success-color); font-family: var(--font-body);
-        padding: 0; box-shadow: 0 0 20px var(--primary-color), inset 0 0 10px rgba(0,0,0,0.5);
-        height: 450px; overflow-y: auto; white-space: pre-wrap;
-        border: 1px solid var(--primary-color);
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-        position: relative;
-      }
-      .terminal-header {
-        background: var(--primary-color); color: var(--dark-bg-solid); padding: 8px 15px; font-weight: bold;
-        display: flex; justify-content: space-between; align-items: center;
-        position: sticky; top: 0; z-index: 3;
-      }
-      .terminal-content { padding: 1rem; }
-      .terminal-input-line { display: flex; align-items: center; padding: 0.5rem 1rem; background: var(--dark-bg-solid); }
-      .terminal-input {
-        background: transparent; border: none; color: var(--success-color);
-        width: 100%; font-family: var(--font-body); font-size: 1rem;
-      }
-      .terminal-input:focus { outline: none; }
-      .terminal-input:disabled { color: #888; }
-      .blinking-cursor {
-        animation: blink 1s step-end infinite; background: var(--success-color);
-        width: 10px; height: 1.3rem; display: inline-block; margin-left: 5px;
-      }
-      
-      /* Style untuk pesan bot dan user */
-      .bot-message, .user-message {
-          display: block;
-          margin-bottom: 0.5rem;
-          word-wrap: break-word;
-      }
-      .user-message {
-          color: var(--primary-color);
-      }
-      .bot-message {
-          color: var(--success-color);
-      }
-      .bot-message strong {
-          color: var(--warning-color);
-      }
-      
-      .btn-cyber {
-        background: transparent; border: 2px solid var(--primary-color); color: var(--primary-color);
-        padding: 12px 28px; font-weight: bold; font-family: var(--font-heading); cursor: pointer;
-        text-shadow: 0 0 5px var(--primary-color); transition: all 0.3s ease; margin: 0.5rem;
-        text-transform: uppercase;
-        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-      }
-      .btn-cyber:hover {
-        background: var(--primary-color); color: var(--dark-bg-solid);
-        box-shadow: 0 0 25px var(--primary-color); transform: translateY(-3px);
-      }
-      .button-group { text-align: center; margin: 2rem 0; }
-      
-      #encoded-message {
-        background: rgba(255,255,255,0.05); padding: 1rem; border: 1px dashed var(--secondary-color);
-        word-wrap: break-word; font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;
-        cursor: help;
-      }
-      
-      .threat-feed {
-        background: rgba(255,0,0,0.1); color: var(--danger-color); font-family: var(--font-body);
-        font-size: 0.9rem; padding: 0.5rem; border-bottom: 1px solid var(--danger-color);
-        overflow: hidden; white-space: nowrap;
-        position: fixed; top: 0; left: 0; width: 100%; z-index: 10;
-      }
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg-solid);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-body);
+            color: var(--success-color);
+        }
 
-      footer {
-        text-align: center; border-top: 1px solid rgba(0, 255, 255, 0.3);
-        padding-top: 2rem; margin-top: 2rem; color: #888;
-      }
+        .preloader-content {
+            text-align: center;
+        }
+
+        .preloader-content p {
+            white-space: pre;
+            text-align: left;
+        }
+
+        #preloader-logo {
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+            animation: fadeIn 1s 2s forwards, glitch 1.5s 3s infinite;
+        }
+
+        .background-layers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #matrixCanvas {
+            position: absolute;
+            opacity: 0.5;
+        }
+
+        #world-map {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.imgur.com/6X0VssB.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            animation: pulse-map 10s infinite alternate;
+        }
+
+        header,
+        nav,
+        main,
+        footer {
+            padding: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
+            position: relative;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes flicker {
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes pulse-map {
+            from {
+                opacity: 0.1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0.2;
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes glitch {
+            0%,
+            100% {
+                transform: translate(0, 0);
+                text-shadow: 0 0 10px var(--primary-color);
+                clip-path: inset(0 0 0 0);
+            }
+            10% {
+                transform: translate(-5px, 2px);
+                text-shadow: 0 0 10px var(--danger-color);
+                clip-path: inset(10% 0 85% 0);
+            }
+            30% {
+                transform: translate(3px, -4px);
+                text-shadow: 0 0 10px var(--success-color);
+                clip-path: inset(90% 0 2% 0);
+            }
+            50% {
+                transform: translate(0, 0);
+                clip-path: inset(40% 0 40% 0);
+            }
+            70% {
+                transform: translate(-2px, 3px);
+            }
+            90% {
+                transform: translate(4px, -2px);
+                text-shadow: 0 0 10px var(--secondary-color);
+                clip-path: inset(75% 0 10% 0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            text-shadow: 0 0 8px var(--primary-color), 0 0 15px var(--secondary-color);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 3rem;
+            animation: glitch var(--glitch-speed) linear infinite alternate-reverse;
+            display: inline-block;
+        }
+
+        .title-wrapper {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        p,
+        li {
+            line-height: 1.8;
+        }
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            display: block;
+            margin: 1rem auto;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--secondary-color), inset 0 0 10px var(--primary-color);
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 0 25px var(--primary-color));
+        }
+
+        nav {
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px var(--primary-color);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--secondary-color);
+            text-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        /* FITUR BARU: Live Operations Stats */
+
+        .ops-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+            padding: 1rem;
+            border: 1px dashed var(--warning-color);
+            background: rgba(243, 156, 18, 0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .stat-value {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warning-color);
+            text-shadow: 0 0 10px var(--warning-color);
+        }
+
+        .stat-item .stat-label {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: var(--text-color);
+            letter-spacing: 2px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .team-member {
+            background: transparent;
+            border: 1px solid var(--secondary-color);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 0, 255, 0.3), transparent 30%);
+            animation: rotate-border 4s linear infinite;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+
+        @keyframes rotate-border {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .team-member img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            margin-bottom: 1rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .team-member h3 {
+            color: var(--success-color);
+            text-shadow: 0 0 5px var(--success-color);
+            z-index: 2;
+            position: relative;
+        }
+
+        .team-member p {
+            font-size: 0.9rem;
+            color: #bbb;
+            text-shadow: none;
+            z-index: 2;
+            position: relative;
+        }
+
+        .terminal-window {
+            background-color: var(--dark-bg-solid);
+            color: var(--success-color);
+            font-family: var(--font-body);
+            padding: 0;
+            box-shadow: 0 0 20px var(--primary-color), inset 0 0 10px rgba(0, 0, 0, 0.5);
+            height: 450px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+            position: relative;
+        }
+
+        .terminal-header {
+            background: var(--primary-color);
+            color: var(--dark-bg-solid);
+            padding: 8px 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+        }
+
+        .terminal-content {
+            padding: 1rem;
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--dark-bg-solid);
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: var(--success-color);
+            width: 100%;
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+
+        .terminal-input:focus {
+            outline: none;
+        }
+
+        .terminal-input:disabled {
+            color: #888;
+        }
+
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+            background: var(--success-color);
+            width: 10px;
+            height: 1.3rem;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* Style untuk pesan bot dan user */
+
+        .bot-message,
+        .user-message {
+            display: block;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            color: var(--primary-color);
+        }
+
+        .bot-message {
+            color: var(--success-color);
+        }
+
+        .bot-message strong {
+            color: var(--warning-color);
+        }
+
+        .btn-cyber {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 28px;
+            font-weight: bold;
+            font-family: var(--font-heading);
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--primary-color);
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .btn-cyber:hover {
+            background: var(--primary-color);
+            color: var(--dark-bg-solid);
+            box-shadow: 0 0 25px var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .button-group {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        #encoded-message {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border: 1px dashed var(--secondary-color);
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            cursor: help;
+        }
+
+        .threat-feed {
+            background: rgba(255, 0, 0, 0.1);
+            color: var(--danger-color);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--danger-color);
+            overflow: hidden;
+            white-space: nowrap;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        footer {
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            color: #888;
+        }
     </style>
 </head>
 <body>
     <div id="preloader">
         <div class="preloader-content">
-            <p id="preloader-text"></p>
-            <img src="https://a.top4top.io/s_3443cj53q0.png" alt="Logo GCHT" id="preloader-logo"/>
-        </div>
+            <p id="preloader-text"></p> <img src="https://a.top4top.io/s_3443cj53q0.png" alt="Logo GCHT" id="preloader-logo" /> </div>
     </div>
-
     <div id="site-content">
-      <div class="background-layers">
-          <canvas id="matrixCanvas"></canvas>
-          <div id="world-map"></div>
-      </div>
-      
-      <div class="threat-feed">
-        <marquee scrollamount="8" id="threat-ticker">
-            <span>[LIVE THREAT MAP]</span>
-        </marquee>
-      </div>
-
-      <header style="margin-top: 40px;"> <div class="title-wrapper">
-          <h1 class="main-title">GHOST CYBER HUNTER</h1>
+        <div class="background-layers"> <canvas id="matrixCanvas"></canvas>
+            <div id="world-map"></div>
         </div>
-        <div class="container" id="header-container">
-          <img src="https://a.top4top.io/s_3443cj53q0.png" alt="Logo GCHT" class="logo"/>
-          <p style="text-align:center; font-style: italic; color: var(--primary-color);">
-            KEAMANAN ADALAH MITOS. KERENTANAN ADALAH LOGIKA.<br>
-            DALAM PERANG DIGITAL, KAMI ADALAH ANOMALI.
-          </p>
+        <div class="threat-feed">
+            <marquee scrollamount="8" id="threat-ticker"> <span>[LIVE THREAT MAP]</span> </marquee>
         </div>
-      </header>
-
-      <nav>
-        <ul>
-          <li><a href="#missions"><i class="fa-solid fa-crosshairs"></i> OPS</a></li>
-          <li><a href="#ops-center"><i class="fa-solid fa-chart-line"></i> OPS-CENTER</a></li>
-          <li><a href="#members"><i class="fa-solid fa-users"></i> AGENT</a></li>
-          <li><a href="#alliance"><i class="fa-solid fa-handshake"></i> ALIANSI</a></li>
-          <li><a href="#comms"><i class="fa-solid fa-terminal"></i> COMMS</a></li>
-        </ul>
-      </nav>
-      
-      <main>
-        
-        <section id="missions" class="container">
-            <h2><i class="fa-solid fa-bullseye"></i> Mission Briefing</h2>
-            <p>GHOST CYBER HUNTER TEAM [GCHT] bukanlah sekadar komunitas. Kami adalah sebuah ideologi yang bergerak di antara barisan kode dan bayangan jaringan. Fokus kami: <strong>Cyber Attack, Bug Bounty, Penetration Testing, dan Eksplorasi Digital</strong>. Tujuan kami hanya satu: <strong>KEBEBASAN INFORMASI</strong>. Kami membongkar apa yang penguasa sembunyikan dan menunjukkan kerapuhan sistem yang mereka banggakan.</p>
-            <h3><i class="fa-solid fa-key"></i> Pesan Terenkripsi</h3>
-            <p>Intel terbaru. Dekripsi untuk memahami. Kunci ada pada kemauanmu.</p>
-            <div id="encoded-message" title="Click to decode"></div>
-            <button class="btn-cyber" onclick="decodeMessage(event)" style="margin: 1rem 0 0 0;"><i class="fa-solid fa-unlock"></i> DECRYPT</button>
-        </section>
-        
-        <section id="ops-center" class="container">
-            <h2><i class="fa-solid fa-broadcast-tower"></i> Operations Center</h2>
-            <p>Data real-time dari seluruh operasi global kami. Statistik ini merepresentasikan jangkauan dan dampak kolektif GCHT di dunia digital. Setiap angka adalah bukti perlawanan.</p>
-            <div class="ops-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="stat-systems">0</div>
-                    <div class="stat-label">Systems Breached</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="stat-data">0TB</div>
-                    <div class="stat-label">Data Liberated</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="stat-vulns">0</div>
-                    <div class="stat-label">Vulns Disclosed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="stat-agents">20</div>
-                    <div class="stat-label">Active Agents</div>
-                </div>
+        <header style="margin-top: 40px;">
+            <div class="title-wrapper">
+                <h1 class="main-title">GHOST CYBER HUNTER</h1>
             </div>
-        </section>
-   
-        <section id="members" class="container">
-            <h2><i class="fa-solid fa-user-secret"></i> Struktur Tim Inti</h2>
-            <div class="team-grid">
-              <div class="team-member"><h3>MONGKER</h3><p>INFO, SOC-ENG, TOOL DEV</p></div>
-              <div class="team-member"><h3>DKS</h3><p>FOUNDER, WEB APP EXPLOITER</p></div>
-              <div class="team-member"><h3>JUBAH HITAM AGENCY</h3><p>FOUNDER</p></div>
-              <div class="team-member"><h3>ADAM NOVIECE</h3><p>WEB EXPLOITER</p></div>
-              <div class="team-member"><h3>BULLXPLOIT</h3><p>PENTESTER & ATTACKER</p></div>
-              <div class="team-member"><h3>RENXPLOIT</h3><p>RECON & TOOL DEV</p></div>
-              <div class="team-member"><h3>EUPHORIA</h3><p>WEB EXPLOITER & ATTACKER</p></div>
-              <div class="team-member"><h3>RAYANXPLOIT</h3><p>ATTACKER, SUBDOMAIN TAKEOVER</p></div>
-              <div class="team-member"><h3>SCORPIO</h3><p>WEB EXPLOITER & ATTACKER</p></div>
-              <div class="team-member"><h3>MR.PATRICK</h3><p>ATTACKER & PENTESTER</p></div>
-              <div class="team-member"><h3>KING.RIZXX</h3><p>SQLi EXPLOITATION</p></div>
-              <div class="team-member"><h3>MULYADI</h3><p>SUBDOMAIN, LOCK-ON TARGET</p></div>
-              <div class="team-member"><h3>MR.ZeeoneOfc</h3><p>OSINT & DOXING</p></div>
-              <div class="team-member"><h3>MR.KRONCO</h3><p>EXPLOITER, OSINT FRAMEWORK</p></div>
-              <div class="team-member"><h3>GHOST77L</h3><p>MINING & EXPLOITER</p></div>
-              <div class="team-member"><h3>BLACK ANGEL</h3><p>HARDWARE & TROJAN SPECIALIST</p></div>
-              <div class="team-member"><h3>LeXzTheRuller</h3><p>WEB EXPLOITER & PENTESTER</p></div>
-              <div class="team-member"><h3>DARK ASSASIN</h3><p>PENETRATION TESTING</p></div>
-              <div class="team-member"><h3>LANGZ [C.T.F]</h3><p>CAPTURE THE FLAG</p></div>
-              <div class="team-member"><h3>GALIRUS</h3><p>DEFACER & ATTACKER</p></div>
+            <div class="container" id="header-container"> <img src="https://a.top4top.io/s_3443cj53q0.png" alt="Logo GCHT" class="logo" />
+                <p style="text-align:center; font-style: italic; color: var(--primary-color);"> KEAMANAN ADALAH MITOS. KERENTANAN ADALAH LOGIKA.<br> DALAM PERANG DIGITAL, KAMI ADALAH ANOMALI. </p>
             </div>
-        </section>
-
-        <section id="alliance" class="container">
-            <h2><i class="fa-solid fa-shield-halved"></i> Aliansi Strategis</h2>
-            <div class="team-grid">
-              <div class="team-member"><img src="https://a.top4top.io/p_3445kdh0s0.jpg" alt="Logo Kepang Jaya"/><h3>Kepang jaya</h3><p>Ahli exploit zero-day dan OSINT ekstrim.</p></div>
-              <div class="team-member"><img src="https://b.top4top.io/p_3445ho10r1.jpg" alt="Logo P.T.C.J"/><h3>P.T.C.J</h3><p>Sniper bug bounty, spesialis bypass sistem tier 1.</p></div>
-              <div class="team-member"><img src="https://a.top4top.io/p_34687mdk56.jpg" alt="Logo J.s.C" /><h3>J.s.C ngoprek.xyz</h3><p>Developer web dan ahli dalam merakit sebuah tools hacking.</p></div>
-              <div class="team-member"><img src="https://c.top4top.io/p_3445p184v2.jpg" alt="Logo INDONESIA DARK NET"/><h3>INDONESIA DARK NET</h3><p>Pemantau dark web & spesialis underground mining.</p></div>
-              <div class="team-member"><img src="https://d.top4top.io/p_3445o3hgv3.jpg" alt="Logo PASURUAN SECTEAM"/><h3>PASURUAN SECTEAM</h3><p>Spesialis malware dengan signature polymorphic.</p></div>
-              <div class="team-member"><img src="https://e.top4top.io/p_34454qcqa4.jpg" alt="Logo BLACKSQUAD"/><h3>BLACKSQUAD</h3><p>Master of reconnaissance, cepat dan senyap.</p></div>
-              <div class="team-member"><img src="https://f.top4top.io/p_3445no76p5.jpg" alt="Logo PASUKAN TEKNOLOGI MAFIA"/><h3>PASUKAN TEKNOLOGI MAFIA</h3><p>Pengacak DNS, ahli redirection & poisoning.</p></div>
-              <div class="team-member"><img src="https://h.top4top.io/p_3445y5rgx7.jpg" alt="Logo S.C.T"/><h3>S.C.T</h3><p>Infiltrasi firewall tanpa jejak.</p></div>
-              <div class="team-member"><img src="https://i.top4top.io/p_34457j7j08.jpg" alt="Logo SQUAD BERANTAI"/><h3>SQUAD BERANTAI</h3><p>Pengendali remote access & panel injection.</p></div>
-              <div class="team-member"><img src="https://j.top4top.io/p_3445sh8vj9.jpg" alt="Logo ANONYMOUS"/><h3>ANONYMOUS</h3><p>Master shell uploader dengan ribuan varian payload.</p></div>
-              <div class="team-member"><img src="https://b.top4top.io/p_3445zgc250.jpg" alt="Logo BLACK ELERONE TEAM"/><h3>BLACK ELERONE TEAM</h3><p>Peretas kriptografi & decoder sistem terenkripsi.</p></div>
-              <div class="team-member"><img src="https://a.top4top.io/p_3445vmg7a0.jpg" alt="Logo GHOST CYBER BULLYING"/><h3>GHOST CYBER BULLYING</h3><p>Manipulator source code dari exploit 0 ke full POC.</p></div>
-              </div>
-        </section>
-        
-        <section id="warning" class="container">
-            <h2><i class="fa-solid fa-biohazard"></i> Manifesto Kami</h2>
-            <p>Kami adalah anomali, produk dari sistem yang korup. Selama ketidakadilan menjadi hukum dan suara rakyat direpresi, jaringan tidak akan pernah aman untuk para penindas. Mereka menyebut kami teroris? Salah. Kami adalah antibodi untuk penyakit yang disebut <strong>keserakahan penguasa</strong>. Setiap baris kode yang kami tulis adalah perlawanan. Setiap sistem yang kami tembus adalah pernyataan. Penjara fisik tak akan menghentikan ideologi. Karena kebebasan sejati kami ada dalam kekacauan yang kalian ciptakan.</p>
-            <h3 style="text-align:center; color:var(--danger-color); text-shadow: 0 0 10px var(--danger-color);">#WE_ARE_THE_GLITCH_IN_THE_SYSTEM</h3>
-        </section>
-        
-        <div class="button-group">
-          <button class="btn-cyber" onclick="enterTIKTOK()"><i class="fab fa-tiktok"></i> TIKTOK</button>
-          <button class="btn-cyber" onclick="enterFACEBOOK()"><i class="fab fa-facebook"></i> FACEBOOK</button>
-          <button class="btn-cyber" onclick="toggleAudio()" id="music-btn"><i class="fa-solid fa-volume-high"></i> MUSIK ON</button>
-        </div>
-        
-        <section id="comms" class="container">
-            <h3><i class="fa-solid fa-satellite-dish"></i> GCHT Secure Comms</h3>
-            <div class="terminal-window">
-                <div class="terminal-header" id="terminal-header"><span>[secure-comms] - GHOSTBOT_v4.0</span> <span id="bot-status">INITIALIZING</span></div>
-                <div class="terminal-content" id="gchtChatBox"></div>
-                <div class="terminal-input-line">
-                    <span style="padding-left: 1rem;">[user@gcht]$&nbsp;</span>
-                    <input type="text" id="gchtChatInput" class="terminal-input" placeholder="Memuat database..." disabled>
-                    <div class="blinking-cursor"></div>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="#missions"><i class="fa-solid fa-crosshairs"></i> OPS</a></li>
+                <li><a href="#ops-center"><i class="fa-solid fa-chart-line"></i> OPS-CENTER</a></li>
+                <li><a href="#members"><i class="fa-solid fa-users"></i> AGENT</a></li>
+                <li><a href="#alliance"><i class="fa-solid fa-handshake"></i> ALIANSI</a></li>
+                <li><a href="#comms"><i class="fa-solid fa-terminal"></i> COMMS</a></li>
+            </ul>
+        </nav>
+        <main>
+            <section id="missions" class="container">
+                <h2><i class="fa-solid fa-bullseye"></i> Mission Briefing</h2>
+                <p>GHOST CYBER HUNTER TEAM [GCHT] bukanlah sekadar komunitas. Kami adalah sebuah ideologi yang bergerak di antara barisan kode dan bayangan jaringan. Fokus kami: <strong>Cyber Attack, Bug Bounty, Penetration Testing, dan Eksplorasi Digital</strong>.
+                    Tujuan kami hanya satu: <strong>KEBEBASAN INFORMASI</strong>. Kami membongkar apa yang penguasa sembunyikan dan menunjukkan kerapuhan sistem yang mereka banggakan.</p>
+                <h3><i class="fa-solid fa-key"></i> Pesan Terenkripsi</h3>
+                <p>Intel terbaru. Dekripsi untuk memahami. Kunci ada pada kemauanmu.</p>
+                <div id="encoded-message" title="Click to decode"></div> <button class="btn-cyber" onclick="decodeMessage(event)" style="margin: 1rem 0 0 0;"><i class="fa-solid fa-unlock"></i> DECRYPT</button> </section>
+            <section id="ops-center" class="container">
+                <h2><i class="fa-solid fa-broadcast-tower"></i> Operations Center</h2>
+                <p>Data real-time dari seluruh operasi global kami. Statistik ini merepresentasikan jangkauan dan dampak kolektif GCHT di dunia digital. Setiap angka adalah bukti perlawanan.</p>
+                <div class="ops-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-systems">0</div>
+                        <div class="stat-label">Systems Breached</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-data">0TB</div>
+                        <div class="stat-label">Data Liberated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-vulns">0</div>
+                        <div class="stat-label">Vulns Disclosed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-agents">20</div>
+                        <div class="stat-label">Active Agents</div>
+                    </div>
                 </div>
-            </div>
-        </section>
-      </main>
-      
-      <audio id="bg-music" loop><source src="https://files.catbox.moe/9tgoys.m4a" type="audio/mp4"></audio>
-      <audio id="sfx-type" src="https://files.catbox.moe/bks83h.mp3"></audio>
-      <audio id="sfx-send" src="https://files.catbox.moe/uoz2f9.mp3"></audio>
-      <audio id="sfx-error" src="https://files.catbox.moe/t82cmx.mp3"></audio> <audio id="sfx-success" src="https://files.catbox.moe/8d24b5.mp3"></audio> <footer>
-          <p>&copy; 2025 GHOST CYBER HUNTER TEAM. SEMUA SISTEM TERPANTAU.</p>
-      </footer>
+            </section>
+            <section id="members" class="container">
+                <h2><i class="fa-solid fa-user-secret"></i> Struktur Tim Inti</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <h3>MONGKER</h3>
+                        <p>INFO, SOC-ENG, TOOL DEV</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>DKS</h3>
+                        <p>FOUNDER, WEB APP EXPLOITER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>JUBAH HITAM AGENCY</h3>
+                        <p>FOUNDER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>ADAM NOVIECE</h3>
+                        <p>WEB EXPLOITER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>BULLXPLOIT</h3>
+                        <p>PENTESTER & ATTACKER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>RENXPLOIT</h3>
+                        <p>RECON & TOOL DEV</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>EUPHORIA</h3>
+                        <p>WEB EXPLOITER & ATTACKER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>RAYANXPLOIT</h3>
+                        <p>ATTACKER, SUBDOMAIN TAKEOVER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>SCORPIO</h3>
+                        <p>WEB EXPLOITER & ATTACKER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>MR.PATRICK</h3>
+                        <p>ATTACKER & PENTESTER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>KING.RIZXX</h3>
+                        <p>SQLi EXPLOITATION</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>MULYADI</h3>
+                        <p>SUBDOMAIN, LOCK-ON TARGET</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>MR.ZeeoneOfc</h3>
+                        <p>OSINT & DOXING</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>MR.KRONCO</h3>
+                        <p>EXPLOITER, OSINT FRAMEWORK</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>GHOST77L</h3>
+                        <p>MINING & EXPLOITER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>BLACK ANGEL</h3>
+                        <p>HARDWARE & TROJAN SPECIALIST</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>LeXzTheRuller</h3>
+                        <p>WEB EXPLOITER & PENTESTER</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>DARK ASSASIN</h3>
+                        <p>PENETRATION TESTING</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>LANGZ [C.T.F]</h3>
+                        <p>CAPTURE THE FLAG</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>GALIRUS</h3>
+                        <p>DEFACER & ATTACKER</p>
+                    </div>
+                </div>
+            </section>
+            <section id="alliance" class="container">
+                <h2><i class="fa-solid fa-shield-halved"></i> Aliansi Strategis</h2>
+                <div class="team-grid">
+                    <div class="team-member"><img src="https://a.top4top.io/p_3445kdh0s0.jpg" alt="Logo Kepang Jaya" />
+                        <h3>Kepang jaya</h3>
+                        <p>Ahli exploit zero-day dan OSINT ekstrim.</p>
+                    </div>
+                    <div class="team-member"><img src="https://b.top4top.io/p_3445ho10r1.jpg" alt="Logo P.T.C.J" />
+                        <h3>P.T.C.J</h3>
+                        <p>Sniper bug bounty, spesialis bypass sistem tier 1.</p>
+                    </div>
+                    <div class="team-member"><img src="https://a.top4top.io/p_34687mdk56.jpg" alt="Logo J.s.C" />
+                        <h3>J.s.C ngoprek.xyz</h3>
+                        <p>Developer web dan ahli dalam merakit sebuah tools hacking.</p>
+                    </div>
+                    <div class="team-member"><img src="https://c.top4top.io/p_3445p184v2.jpg" alt="Logo INDONESIA DARK NET" />
+                        <h3>INDONESIA DARK NET</h3>
+                        <p>Pemantau dark web & spesialis underground mining.</p>
+                    </div>
+                    <div class="team-member"><img src="https://d.top4top.io/p_3445o3hgv3.jpg" alt="Logo PASURUAN SECTEAM" />
+                        <h3>PASURUAN SECTEAM</h3>
+                        <p>Spesialis malware dengan signature polymorphic.</p>
+                    </div>
+                    <div class="team-member"><img src="https://e.top4top.io/p_34454qcqa4.jpg" alt="Logo BLACKSQUAD" />
+                        <h3>BLACKSQUAD</h3>
+                        <p>Master of reconnaissance, cepat dan senyap.</p>
+                    </div>
+                    <div class="team-member"><img src="https://f.top4top.io/p_3445no76p5.jpg" alt="Logo PASUKAN TEKNOLOGI MAFIA" />
+                        <h3>PASUKAN TEKNOLOGI MAFIA</h3>
+                        <p>Pengacak DNS, ahli redirection & poisoning.</p>
+                    </div>
+                    <div class="team-member"><img src="https://h.top4top.io/p_3445y5rgx7.jpg" alt="Logo S.C.T" />
+                        <h3>S.C.T</h3>
+                        <p>Infiltrasi firewall tanpa jejak.</p>
+                    </div>
+                    <div class="team-member"><img src="https://i.top4top.io/p_34457j7j08.jpg" alt="Logo SQUAD BERANTAI" />
+                        <h3>SQUAD BERANTAI</h3>
+                        <p>Pengendali remote access & panel injection.</p>
+                    </div>
+                    <div class="team-member"><img src="https://j.top4top.io/p_3445sh8vj9.jpg" alt="Logo ANONYMOUS" />
+                        <h3>ANONYMOUS</h3>
+                        <p>Master shell uploader dengan ribuan varian payload.</p>
+                    </div>
+                    <div class="team-member"><img src="https://b.top4top.io/p_3445zgc250.jpg" alt="Logo BLACK ELERONE TEAM" />
+                        <h3>BLACK ELERONE TEAM</h3>
+                        <p>Peretas kriptografi & decoder sistem terenkripsi.</p>
+                    </div>
+                    <div class="team-member"><img src="https://a.top4top.io/p_3445vmg7a0.jpg" alt="Logo GHOST CYBER BULLYING" />
+                        <h3>GHOST CYBER BULLYING</h3>
+                        <p>Manipulator source code dari exploit 0 ke full POC.</p>
+                    </div>
+                </div>
+            </section>
+            <section id="warning" class="container">
+                <h2><i class="fa-solid fa-biohazard"></i> Manifesto Kami</h2>
+                <p>Kami adalah anomali, produk dari sistem yang korup. Selama ketidakadilan menjadi hukum dan suara rakyat direpresi, jaringan tidak akan pernah aman untuk para penindas. Mereka menyebut kami teroris? Salah. Kami adalah antibodi untuk penyakit
+                    yang disebut <strong>keserakahan penguasa</strong>. Setiap baris kode yang kami tulis adalah perlawanan. Setiap sistem yang kami tembus adalah pernyataan. Penjara fisik tak akan menghentikan ideologi. Karena kebebasan sejati kami ada
+                    dalam kekacauan yang kalian ciptakan.</p>
+                <h3 style="text-align:center; color:var(--danger-color); text-shadow: 0 0 10px var(--danger-color);">#WE_ARE_THE_GLITCH_IN_THE_SYSTEM</h3>
+            </section>
+            <div class="button-group"> <button class="btn-cyber" onclick="enterTIKTOK()"><i class="fab fa-tiktok"></i> TIKTOK</button> <button class="btn-cyber" onclick="enterFACEBOOK()"><i class="fab fa-facebook"></i> FACEBOOK</button> <button class="btn-cyber" onclick="toggleAudio()"
+                    id="music-btn"><i class="fa-solid fa-volume-high"></i> MUSIK ON</button> </div>
+            <section id="comms" class="container">
+                <h3><i class="fa-solid fa-satellite-dish"></i> GCHT Secure Comms</h3>
+                <div class="terminal-window">
+                    <div class="terminal-header" id="terminal-header"><span>[secure-comms] - GHOSTBOT_v4.0</span> <span id="bot-status">INITIALIZING</span></div>
+                    <div class="terminal-content" id="gchtChatBox"></div>
+                    <div class="terminal-input-line"> <span style="padding-left: 1rem;">[user@gcht]$&nbsp;</span> <input type="text" id="gchtChatInput" class="terminal-input" placeholder="Memuat database..." disabled>
+                        <div class="blinking-cursor"></div>
+                    </div>
+                </div>
+            </section>
+        </main> <audio id="bg-music" loop><source src="https://files.catbox.moe/9tgoys.m4a" type="audio/mp4"></audio> <audio id="sfx-type" src="https://files.catbox.moe/bks83h.mp3"></audio> <audio id="sfx-send" src="https://files.catbox.moe/uoz2f9.mp3"></audio>        <audio id="sfx-error" src="https://files.catbox.moe/t82cmx.mp3"></audio> <audio id="sfx-success" src="https://files.catbox.moe/8d24b5.mp3"></audio>
+        <footer>
+            <p>&copy; 2025 GHOST CYBER HUNTER TEAM. SEMUA SISTEM TERPANTAU.</p>
+        </footer>
     </div>
-      
     <script>
-    // --- ELEMENT SELECTORS ---
-    const preloaderTextEl = document.getElementById('preloader-text');
-    const siteContent = document.getElementById('site-content');
-    const audio = document.getElementById('bg-music');
-    const musicBtn = document.getElementById('music-btn');
-    const canvas = document.getElementById('matrixCanvas');
-    const ticker = document.getElementById('threat-ticker');
-    const encodedMessageEl = document.getElementById('encoded-message');
-    const chatBox = document.getElementById("gchtChatBox");
-    const chatInput = document.getElementById("gchtChatInput");
-    const sfxType = document.getElementById('sfx-type');
-    const sfxSend = document.getElementById('sfx-send');
-    const sfxError = document.getElementById('sfx-error');
-    const sfxSuccess = document.getElementById('sfx-success');
-    const botStatus = document.getElementById('bot-status');
+        // --- ELEMENT SELECTORS ---
+        const preloaderTextEl = document.getElementById('preloader-text');
+        const siteContent = document.getElementById('site-content');
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const canvas = document.getElementById('matrixCanvas');
+        const ticker = document.getElementById('threat-ticker');
+        const encodedMessageEl = document.getElementById('encoded-message');
+        const chatBox = document.getElementById("gchtChatBox");
+        const chatInput = document.getElementById("gchtChatInput");
+        const sfxType = document.getElementById('sfx-type');
+        const sfxSend = document.getElementById('sfx-send');
+        const sfxError = document.getElementById('sfx-error');
+        const sfxSuccess = document.getElementById('sfx-success');
+        const botStatus = document.getElementById('bot-status');
+        // --- GLOBAL STATE ---
+        let isMusicOn = false;
+        let isTyping = false;
+        let chatKnowledgeBase = {}; // Menggunakan Objek untuk struktur yang lebih baik
+        let botMemory = {}; // "Pikiran Lokal" untuk bot
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            runBootSequence();
+            initializeSystem();
+        };
 
-    // --- GLOBAL STATE ---
-    let isMusicOn = false;
-    let isTyping = false;
-    let chatKnowledgeBase = {}; // Menggunakan Objek untuk struktur yang lebih baik
-    let botMemory = {}; // "Pikiran Lokal" untuk bot
-
-    // --- INITIALIZATION ---
-    window.onload = () => {
-        runBootSequence();
-        initializeSystem();
-    };
-
-    function initializeSystem() {
-        initMatrix();
-        initThreatFeed();
-        initEncryptedMessage();
-        initStatsCounters();
-        loadKnowledgeBase();
-    }
-
-    // --- PRELOADER & SCROLL ---
-    function runBootSequence() {
-        const bootSequence = [
-            'Booting GCHT OS v4.0...', 'Initializing kernel...', 'Loading modules: [████████████████████]',
-            'Mounting file systems...', 'Starting network services: [OK]', 'Connecting to ShadowNet...',
-            'Bypassing global firewalls: [ACCESS GRANTED]', 'Calibrating GhostBot AI...', 'Finalizing UI...', 'Welcome, Operator.'
-        ];
-        let lineIndex = 0;
-        function type() {
-            if (lineIndex < bootSequence.length) {
-                preloaderTextEl.innerHTML += bootSequence[lineIndex] + '\n';
-                lineIndex++;
-                setTimeout(type, Math.random() * 200 + 50);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('preloader').style.display = 'none';
-                    siteContent.style.display = 'block';
-                    initObserver();
-                }, 2000);
-            }
+        function initializeSystem() {
+            initMatrix();
+            initThreatFeed();
+            initEncryptedMessage();
+            initStatsCounters();
+            loadKnowledgeBase();
         }
-        type();
-    }
+        // --- PRELOADER & SCROLL ---
+        function runBootSequence() {
+            const bootSequence = [
+                'Booting GCHT OS v4.0...', 'Initializing kernel...', 'Loading modules: [████████████████████]',
+                'Mounting file systems...', 'Starting network services: [OK]', 'Connecting to ShadowNet...',
+                'Bypassing global firewalls: [ACCESS GRANTED]', 'Calibrating GhostBot AI...', 'Finalizing UI...', 'Welcome, Operator.'
+            ];
+            let lineIndex = 0;
 
-    function initObserver() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) { entry.target.classList.add('visible'); }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.container').forEach(el => observer.observe(el));
-    }
-
-    // --- AUDIO PLAYER ---
-    function toggleAudio() {
-        if (isMusicOn) {
-            audio.pause();
-            musicBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> MUSIK OFF';
-        } else {
-            audio.play().catch(() => {}); 
-            musicBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> MUSIK ON';
-        }
-        isMusicOn = !isMusicOn;
-    }
-    
-    // Auto-play music on first interaction
-    document.body.addEventListener('click', () => {
-        if (!audio.playing && !isMusicOn) {
-            audio.play().catch(() => {});
-            isMusicOn = true;
-            musicBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> MUSIK ON';
-        }
-    }, { once: true });
-    
-    // --- DYNAMIC CONTENT ---
-    function initMatrix() {
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const chars = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン01".split("");
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = Array.from({ length: Math.ceil(columns) }).fill(canvas.height);
-
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-            ctx.font = `${fontSize}px monospace`;
-            for(let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.985) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        const matrixInterval = setInterval(draw, 40);
-    }
-    
-    function initThreatFeed() {
-        const locations = ["Jakarta, ID", "Singapore, SG", "Tokyo, JP", "Frankfurt, DE", "San Francisco, US", "Seoul, KR"];
-        const actions = ["Bruteforce attempt on SSH", "DDoS attack detected", "SQLi payload blocked", "Zero-day exploit detected", "Data exfiltration attempt", "Phishing campaign neutralized"];
-        setInterval(() => {
-            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
-            const randomAction = actions[Math.floor(Math.random() * actions.length)];
-            ticker.innerHTML = `<span>[LIVE THREAT MAP]</span> &nbsp; > &nbsp; ${randomAction} from ${randomLocation} :: STATUS: MITIGATED`;
-        }, 5000);
-    }
-
-    function initEncryptedMessage() {
-        const originalMessage = "Kami bukan musuh negara. Kami adalah cermin yang memantulkan kebobrokan sistem. Selama korupsi merajalela, kami akan terus ada. Operasi selanjutnya: menargetkan infrastruktur digital para koruptor. Ini bukan ancaman, ini janji. #GCHT";
-        encodedMessageEl.innerText = btoa(unescape(encodeURIComponent(originalMessage)));
-    }
-    
-    function decodeMessage(event) {
-        try {
-            const decoded = decodeURIComponent(escape(atob(encodedMessageEl.innerText)));
-            encodedMessageEl.innerText = `--- DECRYPTION SUCCESSFUL ---\n${decoded}`;
-            event.target.disabled = true;
-            event.target.style.cursor = 'default';
-            sfxSuccess.play();
-        } catch(e) {
-            encodedMessageEl.innerText = "DECRYPTION FAILED. DATA CORRUPTED.";
-            sfxError.play();
-        }
-    }
-    
-    function initStatsCounters() {
-        function animateValue(obj, start, end, duration, suffix = '') {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
+            function type() {
+                if (lineIndex < bootSequence.length) {
+                    preloaderTextEl.innerHTML += bootSequence[lineIndex] + '\n';
+                    lineIndex++;
+                    setTimeout(type, Math.random() * 200 + 50);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('preloader').style.display = 'none';
+                        siteContent.style.display = 'block';
+                        initObserver();
+                    }, 2000);
                 }
-            };
-            window.requestAnimationFrame(step);
+            }
+            type();
         }
 
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                animateValue(document.getElementById('stat-systems'), 0, 1337, 2500);
-                animateValue(document.getElementById('stat-data'), 0, 42, 3000, 'TB');
-                animateValue(document.getElementById('stat-vulns'), 0, 996, 2800);
-                observer.disconnect();
+        function initObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            document.querySelectorAll('.container').forEach(el => observer.observe(el));
+        }
+        // --- AUDIO PLAYER ---
+        function toggleAudio() {
+            if (isMusicOn) {
+                audio.pause();
+                musicBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> MUSIK OFF';
+            } else {
+                audio.play().catch(() => {});
+                musicBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> MUSIK ON';
             }
-        }, { threshold: 0.5 });
-        observer.observe(document.getElementById('ops-center'));
-    }
+            isMusicOn = !isMusicOn;
+        }
+        // Auto-play music on first interaction
+        document.body.addEventListener('click', () => {
+            if (!audio.playing && !isMusicOn) {
+                audio.play().catch(() => {});
+                isMusicOn = true;
+                musicBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i> MUSIK ON';
+            }
+        }, {
+            once: true
+        });
+        // --- DYNAMIC CONTENT ---
+        function initMatrix() {
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const chars = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン01".split("");
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = Array.from({
+                length: Math.ceil(columns)
+            }).fill(canvas.height);
 
-    // --- EXTERNAL LINKS ---
-    function enterTIKTOK() { window.open("https://vt.tiktok.com/ZSkDfKRv7/"); }
-    function enterFACEBOOK() { window.open("https://www.facebook.com/share/16qYr5qvKi/"); }
+            function draw() {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                ctx.font = `${fontSize}px monospace`;
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.985) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+            const matrixInterval = setInterval(draw, 40);
+        }
 
-    // --- GHOSTBOT v4.0 SCRIPT ---
-    function loadKnowledgeBase() {
-        botTypewriter(chatBox, "Mengkalibrasi jaringan neural... Memuat basis data pengetahuan...");
-        fetch('database.json')
-            .then(response => {
-                if (!response.ok) throw new Error(`[FATAL] Koneksi ke database.json gagal: ${response.statusText}`);
-                return response.json();
-            })
-            .then(data => {
-                chatKnowledgeBase = data;
-                botStatus.textContent = 'ONLINE';
-                botStatus.style.color = 'var(--success-color)';
-                chatInput.placeholder = "Ketik 'help' untuk daftar perintah...";
-                chatInput.disabled = false;
-                chatInput.focus();
-                botTypewriter(chatBox, "Kalibrasi selesai. Sistem online. Saya GhostBot v4.0. Siap menerima perintah.");
+        function initThreatFeed() {
+            const locations = ["Jakarta, ID", "Singapore, SG", "Tokyo, JP", "Frankfurt, DE", "San Francisco, US", "Seoul, KR"];
+            const actions = ["Bruteforce attempt on SSH", "DDoS attack detected", "SQLi payload blocked", "Zero-day exploit detected", "Data exfiltration attempt", "Phishing campaign neutralized"];
+            setInterval(() => {
+                const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+                const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                ticker.innerHTML = `<span>[LIVE THREAT MAP]</span> &nbsp; > &nbsp; ${randomAction} from ${randomLocation} :: STATUS: MITIGATED`;
+            }, 5000);
+        }
+
+        function initEncryptedMessage() {
+            const originalMessage = "Kami bukan musuh negara. Kami adalah cermin yang memantulkan kebobrokan sistem. Selama korupsi merajalela, kami akan terus ada. Operasi selanjutnya: menargetkan infrastruktur digital para koruptor. Ini bukan ancaman, ini janji. #GCHT";
+            encodedMessageEl.innerText = btoa(unescape(encodeURIComponent(originalMessage)));
+        }
+
+        function decodeMessage(event) {
+            try {
+                const decoded = decodeURIComponent(escape(atob(encodedMessageEl.innerText)));
+                encodedMessageEl.innerText = `--- DECRYPTION SUCCESSFUL ---\n${decoded}`;
+                event.target.disabled = true;
+                event.target.style.cursor = 'default';
                 sfxSuccess.play();
-            })
-            .catch(error => {
-                console.error('Error loading knowledge base:', error);
-                botStatus.textContent = 'SYSTEM FAILURE';
-                botStatus.style.color = 'var(--danger-color)';
-                botTypewriter(chatBox, `ERROR: ${error.message}. Comms offline.`);
+            } catch (e) {
+                encodedMessageEl.innerText = "DECRYPTION FAILED. DATA CORRUPTED.";
                 sfxError.play();
-            });
-    }
-    
-    function botTypewriter(element, text, callback) {
-        if (isTyping || !text) return;
-        isTyping = true;
-        
-        sfxType.loop = true;
-        sfxType.play().catch(()=>{});
-        
-        let i = 0;
-        const messageContainer = document.createElement('div');
-        messageContainer.className = 'bot-message';
-        messageContainer.innerHTML = '<strong>[GHOSTBOT]&gt;</strong> ';
-        element.appendChild(messageContainer);
-        
-        const contentSpan = document.createElement('span');
-        messageContainer.appendChild(contentSpan);
-
-        function type() {
-            if (i < text.length) {
-                contentSpan.innerHTML += text.charAt(i);
-                i++;
-                element.scrollTop = element.scrollHeight;
-                setTimeout(type, 15);
-            } else {
-                sfxType.pause();
-                sfxType.currentTime = 0;
-                isTyping = false;
-                if (callback) callback();
             }
         }
-        type();
-    }
-    
-    function getBotResponse(userInput) {
-        userInput = userInput.toLowerCase().trim();
-        let response = chatKnowledgeBase.default_response; // Default response
 
-        // Cek interaksi kontekstual/berbasis memori
-        if (botMemory.last_topic === 'perkenalan' && userInput.includes('kamu')) {
-            return chatKnowledgeBase.contextual_responses.creator_inquiry;
+        function initStatsCounters() {
+            function animateValue(obj, start, end, duration, suffix = '') {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    animateValue(document.getElementById('stat-systems'), 0, 1337, 2500);
+                    animateValue(document.getElementById('stat-data'), 0, 42, 3000, 'TB');
+                    animateValue(document.getElementById('stat-vulns'), 0, 996, 2800);
+                    observer.disconnect();
+                }
+            }, {
+                threshold: 0.5
+            });
+            observer.observe(document.getElementById('ops-center'));
+        }
+        // --- EXTERNAL LINKS ---
+        function enterTIKTOK() {
+            window.open("https://vt.tiktok.com/ZSkDfKRv7/");
         }
 
-        // Cari response berdasarkan kata kunci
-        for (const category in chatKnowledgeBase.keyword_responses) {
-            const item = chatKnowledgeBase.keyword_responses[category];
-            for (const keyword of item.keywords) {
-                if (userInput.includes(keyword)) {
-                    // Simpan "ingatan" tentang topik terakhir
-                    if (category === 'introduction') botMemory.last_topic = 'perkenalan';
-                    else botMemory.last_topic = null;
-                    
-                    // Jika response adalah array, pilih acak
-                    return Array.isArray(item.response) ? item.response[Math.floor(Math.random() * item.response.length)] : item.response;
+        function enterFACEBOOK() {
+            window.open("https://www.facebook.com/share/16qYr5qvKi/");
+        }
+        // --- GHOSTBOT v4.0 SCRIPT ---
+        function loadKnowledgeBase() {
+            botTypewriter(chatBox, "Mengkalibrasi jaringan neural... Memuat basis data pengetahuan...");
+            fetch('database.json')
+                .then(response => {
+                    if (!response.ok) throw new Error(`[FATAL] Koneksi ke database.json gagal: ${response.statusText}`);
+                    return response.json();
+                })
+                .then(data => {
+                    chatKnowledgeBase = data;
+                    botStatus.textContent = 'ONLINE';
+                    botStatus.style.color = 'var(--success-color)';
+                    chatInput.placeholder = "Ketik 'help' untuk daftar perintah...";
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                    botTypewriter(chatBox, "Kalibrasi selesai. Sistem online. Saya GhostBot v4.0. Siap menerima perintah.");
+                    sfxSuccess.play();
+                })
+                .catch(error => {
+                    console.error('Error loading knowledge base:', error);
+                    botStatus.textContent = 'SYSTEM FAILURE';
+                    botStatus.style.color = 'var(--danger-color)';
+                    botTypewriter(chatBox, `ERROR: ${error.message}. Comms offline.`);
+                    sfxError.play();
+                });
+        }
+
+        function botTypewriter(element, text, callback) {
+            if (isTyping || !text) return;
+            isTyping = true;
+            sfxType.loop = true;
+            sfxType.play().catch(() => {});
+            let i = 0;
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'bot-message';
+            messageContainer.innerHTML = '<strong>[GHOSTBOT]&gt;</strong> ';
+            element.appendChild(messageContainer);
+            const contentSpan = document.createElement('span');
+            messageContainer.appendChild(contentSpan);
+
+            function type() {
+                if (i < text.length) {
+                    contentSpan.innerHTML += text.charAt(i);
+                    i++;
+                    element.scrollTop = element.scrollHeight;
+                    setTimeout(type, 15);
+                } else {
+                    sfxType.pause();
+                    sfxType.currentTime = 0;
+                    isTyping = false;
+                    if (callback) callback();
                 }
             }
+            type();
         }
-        
-        // Jika tidak ada yang cocok, gunakan default
-        return Array.isArray(response) ? response[Math.floor(Math.random() * response.length)] : response;
-    }
 
-    chatInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter" && !isTyping && !chatInput.disabled && chatInput.value.trim() !== "") {
-            const userInput = chatInput.value.trim();
-            
-            const userMessage = document.createElement('div');
-            userMessage.className = 'user-message';
-            userMessage.textContent = `[user@gcht]$ ${userInput}`;
-            chatBox.appendChild(userMessage);
-
-            sfxSend.play().catch(()=>{});
-            chatInput.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Handle special commands
-            if (userInput.toLowerCase() === 'clear' || userInput.toLowerCase() === 'cls') {
-                setTimeout(() => {
-                    chatBox.innerHTML = "";
-                    botTypewriter(chatBox, "Terminal dibersihkan.");
-                }, 100);
-                return;
+        function getBotResponse(userInput) {
+            userInput = userInput.toLowerCase().trim();
+            let response = chatKnowledgeBase.default_response; // Default response
+            // Cek interaksi kontekstual/berbasis memori
+            if (botMemory.last_topic === 'perkenalan' && userInput.includes('kamu')) {
+                return chatKnowledgeBase.contextual_responses.creator_inquiry;
             }
-
-            const thinkingMessage = document.createElement('div');
-            thinkingMessage.className = 'bot-message';
-            thinkingMessage.innerHTML = '<strong>[GHOSTBOT]&gt;</strong> <span>Menganalisis...</span>';
-            chatBox.appendChild(thinkingMessage);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            setTimeout(() => {
-                const responseText = getBotResponse(userInput);
-                thinkingMessage.remove();
-                botTypewriter(chatBox, responseText);
-            }, Math.random() * 500 + 300); // Simulate thinking delay
+            // Cari response berdasarkan kata kunci
+            for (const category in chatKnowledgeBase.keyword_responses) {
+                const item = chatKnowledgeBase.keyword_responses[category];
+                for (const keyword of item.keywords) {
+                    if (userInput.includes(keyword)) {
+                        // Simpan "ingatan" tentang topik terakhir
+                        if (category === 'introduction') botMemory.last_topic = 'perkenalan';
+                        else botMemory.last_topic = null;
+                        // Jika response adalah array, pilih acak
+                        return Array.isArray(item.response) ? item.response[Math.floor(Math.random() * item.response.length)] : item.response;
+                    }
+                }
+            }
+            // Jika tidak ada yang cocok, gunakan default
+            return Array.isArray(response) ? response[Math.floor(Math.random() * response.length)] : response;
         }
-    });
-
+        chatInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter" && !isTyping && !chatInput.disabled && chatInput.value.trim() !== "") {
+                const userInput = chatInput.value.trim();
+                const userMessage = document.createElement('div');
+                userMessage.className = 'user-message';
+                userMessage.textContent = `[user@gcht]$ ${userInput}`;
+                chatBox.appendChild(userMessage);
+                sfxSend.play().catch(() => {});
+                chatInput.value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+                // Handle special commands
+                if (userInput.toLowerCase() === 'clear' || userInput.toLowerCase() === 'cls') {
+                    setTimeout(() => {
+                        chatBox.innerHTML = "";
+                        botTypewriter(chatBox, "Terminal dibersihkan.");
+                    }, 100);
+                    return;
+                }
+                const thinkingMessage = document.createElement('div');
+                thinkingMessage.className = 'bot-message';
+                thinkingMessage.innerHTML = '<strong>[GHOSTBOT]&gt;</strong> <span>Menganalisis...</span>';
+                chatBox.appendChild(thinkingMessage);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                setTimeout(() => {
+                    const responseText = getBotResponse(userInput);
+                    thinkingMessage.remove();
+                    botTypewriter(chatBox, responseText);
+                }, Math.random() * 500 + 300); // Simulate thinking delay
+            }
+        });
     </script>
 </body>
 </html>
