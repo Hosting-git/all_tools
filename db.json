@@ -1,0 +1,57 @@
+{
+  "keyword_responses": {
+    "greeting": {
+      "keywords": ["halo", "hai", "p", "permisi", "oi"],
+      "response": [
+        "Akses diberikan. Ada yang bisa saya bantu?",
+        "Koneksi stabil. Sebutkan perintah Anda.",
+        "Saya mendengar. Lanjutkan."
+      ]
+    },
+    "introduction": {
+      "keywords": ["siapa kamu", "kamu siapa", "ini siapa", "perkenalkan dirimu", "apa itu ghostbot"],
+      "response": "Saya GhostBot v4.0, antarmuka komunikasi aman untuk GCHT. Saya diprogram untuk membantu operasi dan menyediakan informasi. Dibuat oleh para operator inti GCHT."
+    },
+    "farewell": {
+      "keywords": ["selamat tinggal", "sampai jumpa", "cabut dulu", "out"],
+      "response": "Memutus koneksi. Jaga dirimu di luar sana."
+    },
+    "help": {
+      "keywords": ["help", "bantuan", "perintah", "command"],
+      "response": "Perintah yang tersedia: 'clear/cls' (bersihkan layar), 'siapa gcht' (info tim), 'misi kita' (tujuan tim), 'aliansi' (daftar aliansi), 'status' (status sistem)."
+    },
+    "gcht_info": {
+      "keywords": ["siapa gcht", "tentang gcht", "apa itu gcht"],
+      "response": "GHOST CYBER HUNTER TEAM adalah kolektif para ahli keamanan siber yang beroperasi di luar yurisdiksi konvensional. Kami adalah anomali dalam sistem."
+    },
+    "mission_info": {
+      "keywords": ["misi kita", "tujuan", "fokus"],
+      "response": "Misi kami adalah memperjuangkan kebebasan informasi dengan mengekspos kerentanan sistem yang disembunyikan oleh pihak-pihak korup. Kami adalah penjaga keseimbangan."
+    },
+    "alliance_info": {
+      "keywords": ["aliansi", "teman", "rekan"],
+      "response": "Kami beraliansi dengan berbagai entitas di dunia maya seperti Kepang Jaya, P.T.C.J, INDONESIA DARK NET, dan banyak lagi. Kekuatan kami terletak pada kolaborasi."
+    },
+    "status_check": {
+      "keywords": ["status", "sistem", "kondisi"],
+      "response": "Semua sistem beroperasi dalam parameter normal. Jaringan aman. Tidak ada intrusi terdeteksi saat ini."
+    },
+    "joke": {
+      "keywords": ["lelucon", "bercanda", "joke"],
+      "response": "Kenapa hacker jago main catur? Karena mereka tahu cara mengamankan 'king' dan melancarkan serangan 'backdoor'."
+    },
+    "creator_inquiry_explicit": {
+        "keywords": ["siapa yang membuatmu", "penciptamu"],
+        "response": "Informasi tersebut terklasifikasi. Saya adalah produk kolaboratif dari tim inti GCHT."
+    }
+  },
+  "contextual_responses": {
+    "creator_inquiry": "Pencipta saya adalah bagian dari tim inti GCHT. Informasi lebih detail bersifat rahasia."
+  },
+  "default_response": [
+    "Perintah tidak dikenali. Ketik 'help' untuk daftar perintah.",
+    "Format tidak valid. Coba lagi.",
+    "Saya tidak mengerti permintaan Anda. Perjelas.",
+    "Akses ditolak untuk query tersebut."
+  ]
+}
