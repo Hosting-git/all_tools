@@ -12,9 +12,7 @@ import threading
 import random
 import aiohttp
 
-
-    
-BOT_TOKEN = "7809134268:AAEsnLQrQVfGWAnR6prdqAT26GBxLm60Xbg"
+BOT_TOKEN = input("masukan token bot tele: ")
 
 DEFAULT_LIMIT = 100000
 
